@@ -1,0 +1,60 @@
+---
+description: Boundaries and standards for the Rust accessibility engine (crates/a11y_engine). Keeps the core pure, deterministic and testable.
+globs: crates/a11y_engine/**
+alwaysApply: false
+---
+
+# Rust Engine Rules
+
+These rules apply to the pure Rust core in `crates/a11y_engine`. They refine the
+global `AGENTS.md` for code that lives inside the engine crate.
+
+## Purity
+
+- The core must be pure Rust. No browser APIs, no DOM, no React/Vue/Angular.
+- No Node-specific APIs.
+- No global mutable state. No side effects inside rules.
+- Serialization/JS bridging belongs to the Wasm crate, never here.
+
+## Layering
+
+Respect the pipeline boundaries described in `docs/ARCHITECTURE.md`:
+
+```
+parser -> ast -> indexer -> rule engine -> reporter -> analyzer
+```
+
+- Rules read the normalized AST and indexes only. Do not couple rules to parser
+  internals.
+- The parser must not run rules or build reports.
+- The indexer computes shared indexes once; rules consume them.
+
+## Rules (lint rules)
+
+Every accessibility rule must:
+
+- implement the `Rule` trait (`code()` + `check(node, ctx)`).
+- be isolated: a rule may not depend on another rule.
+- be stateless, deterministic and side-effect free.
+- never mutate nodes or the AST.
+- map to an entry in `docs/RULES.md` (code, severity, WCAG reference).
+
+## Style
+
+- Prefer small modules and explicit types.
+- Prefer iterators; minimize allocations and copies.
+- No large unrelated refactors.
+
+## Testing (required)
+
+Every new rule must ship with tests covering:
+
+- a passing case (no issue),
+- a failing case (issue reported with correct code/severity),
+- an edge case.
+
+## Scope discipline
+
+- Implement only the current task. Do not implement future roadmap phases unless
+  explicitly requested.
+- When uncertain: stop, explain the ambiguity, suggest the safest option.

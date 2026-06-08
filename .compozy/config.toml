@@ -1,0 +1,16 @@
+# Compozy workspace config for A11y Engine.
+# Global defaults can live in ~/.compozy/config.toml and are overridden here.
+# Explicit CLI flags always win over these values.
+
+[defaults]
+# Default runtime for agents/tasks. Override per command with --ide.
+ide = "cursor"
+
+[tasks]
+# Task type registry used by task v2 frontmatter `type`.
+types = ["backend", "infra", "docs", "test", "refactor", "chore", "bugfix"]
+
+[tasks.run]
+# Run discovered tasks one at a time in order (V2 worktree isolation pending).
+run_multiple_mode = "enqueued"
+recursive = true

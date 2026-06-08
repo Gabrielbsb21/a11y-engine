@@ -1,0 +1,9 @@
+[package]
+name = "a11y_engine"
+version = "0.1.0"
+description = "Pure Rust core for the A11y Engine accessibility analyzer."
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
